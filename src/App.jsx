@@ -237,7 +237,7 @@ export default function DesignStudio() {
       // ── Step 1: Claude interprets the design ──────────────────────────────
       let messages = [];
       const jsonInstr = `Return ONLY valid JSON — no markdown, no preamble:
-{"name":"creative shoe name","tagline":"punchy tagline max 7 words","colorway":["#hex1","#hex2","#hex3"],"upper":"upper design description 1-2 sentences","sole":"sole design 1 sentence","tongue":"tongue and laces 1 sentence","style":"Runner|Court|Lifestyle|Performance","materials":"3D print texture recommendation","inspiration":"1 sentence on design inspiration","refinements":["idea 1","idea 2","idea 3"],"imagePrompt":"A detailed Ideogram image generation prompt for this exact sneaker — side profile, product photography style, specific materials, textures, colorway, clean white background, studio lighting, highly detailed. Max 80 words."}`;
+{"name":"creative shoe name","tagline":"punchy tagline max 7 words","colorway":["#hex1","#hex2","#hex3"],"upper":"upper design description 1-2 sentences","sole":"sole design 1 sentence","tongue":"tongue and laces 1 sentence","style":"Runner|Court|Lifestyle|Performance","materials":"3D print texture recommendation","inspiration":"1 sentence on design inspiration","refinements":["idea 1","idea 2","idea 3"],"imagePrompt":"A photorealistic product photo of a fully 3D-printed sneaker by Zellerfeld, side profile view, single-material TPU lattice construction with visible print layers and mesh void structure, no stitching or glue, organic computational geometry, clean white background, studio lighting, ultra detailed. Include the specific colorway and design elements described. Max 80 words."}`;
 
       if (tab === "upload" && uploaded) {
         const [meta, b64] = uploaded.split(",");
@@ -269,7 +269,7 @@ export default function DesignStudio() {
       // ── Step 2: Ideogram generates the image ──────────────────────────────
       setGenStep("Rendering shoe with AI…");
       const imgPrompt = concept.imagePrompt ||
-        `Side profile Nike Air Max sneaker, ${concept.upper}, ${concept.colorway?.join(", ")} colorway, ${concept.materials}, product photography, clean white background, studio lighting, highly detailed`;
+        `Photorealistic product photo of a fully 3D-printed Zellerfeld sneaker, side profile, single-material TPU lattice construction with visible print layers, ${concept.upper}, ${concept.colorway?.join(", ")} colorway, ${concept.materials}, no stitching or seams, computational organic geometry, clean white background, studio lighting, ultra detailed`;
 
       try {
         const imgRes = await fetch("/.netlify/functions/generate-image", {
@@ -548,12 +548,12 @@ export default function DesignStudio() {
 
                 {result.refinements?.length > 0 && (
                   <>
-                    <div style={s.label}>Refinement Ideas</div>
+                    <div style={s.label}>Refinement Ideas — click to regenerate</div>
                     {result.refinements.map((r, i) => (
                       <div key={i} style={s.rfmt(i)}
-                        onClick={() => setPrompt(r)}
-                        onMouseEnter={e => e.currentTarget.style.borderColor="#ff4d00"}
-                        onMouseLeave={e => e.currentTarget.style.borderColor="#1e1e1e"}
+                        onClick={() => { setPrompt(r); setTimeout(() => generate(), 100); }}
+                        onMouseEnter={e => { e.currentTarget.style.borderColor="#ff4d00"; e.currentTarget.style.color="#fff"; }}
+                        onMouseLeave={e => { e.currentTarget.style.borderColor="#2a2a2e"; e.currentTarget.style.color="#aaa"; }}
                       >
                         <span style={{color:"#ff4d00", marginRight:"6px", fontFamily:"'DM Mono',monospace", fontSize:"9px"}}>→</span>
                         {r}
