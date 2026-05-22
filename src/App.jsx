@@ -331,7 +331,7 @@ export default function DesignStudio() {
     // result styles
     designName: { fontFamily:"'Bebas Neue',sans-serif", fontSize:"36px", letterSpacing:"0.03em", lineHeight:1, color:"#f5f4f0", marginBottom:"4px" },
     tagline: { fontSize:"12px", color:"#888", fontStyle:"italic", marginBottom:"20px" },
-    previewBox: { height:"160px", borderRadius:"6px", marginBottom:"20px", background:"#1c1d21", border:"1px solid #2e2e36", overflow:"hidden", display:"flex", alignItems:"center", justifyContent:"center", padding:"12px" },
+    previewBox: { height:"320px", borderRadius:"6px", marginBottom:"20px", background:"#1c1d21", border:"1px solid #2e2e36", overflow:"hidden", display:"flex", alignItems:"center", justifyContent:"center", padding:"8px" },
     swatches: { display:"flex", gap:"6px", marginBottom:"20px" },
     swatch: (c) => ({ width:"28px", height:"28px", borderRadius:"50%", background:c, border:"2px solid rgba(255,255,255,0.15)", flexShrink:0 }),
     label: { fontFamily:"'DM Mono',monospace", fontSize:"9px", letterSpacing:"0.15em", color:"#ff6a20", textTransform:"uppercase", marginBottom:"5px", marginTop:"14px" },
@@ -511,7 +511,7 @@ export default function DesignStudio() {
                     <img
                       src={result.generatedImage}
                       alt={result.name}
-                      style={{ width:"100%", height:"100%", objectFit:"contain", borderRadius:"4px" }}
+                      style={{ width:"100%", height:"100%", objectFit:"cover", borderRadius:"4px" }}
                     />
                   ) : (
                     <div style={{textAlign:"center", color:"#444", fontSize:"11px", fontFamily:"'DM Mono',monospace", letterSpacing:"0.08em"}}>
