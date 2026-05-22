@@ -259,7 +259,7 @@ export default function DesignStudio() {
       const res = await fetch("/.netlify/functions/interpret-design", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ model: "claude-sonnet-4-20250514", max_tokens: 1000, messages })
+        body: JSON.stringify({ model: "claude-sonnet-4-6", max_tokens: 1000, messages })
       });
       const data = await res.json();
       const txt = data.content?.find(b => b.type === "text")?.text || "";
