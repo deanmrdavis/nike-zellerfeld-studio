@@ -126,6 +126,8 @@ export default function DesignStudio() {
   const [dragging, setDragging] = useState(false);
   const [generating, setGenerating] = useState(false);
   const [result, setResult] = useState(null);
+  const [history, setHistory] = useState([]);
+  const [showHistory, setShowHistory] = useState(false);
   const [prompt, setPrompt] = useState("");
   const [color, setColor] = useState("#ff4d00");
   const [brush, setBrush] = useState(10);
@@ -156,7 +158,7 @@ export default function DesignStudio() {
       ctx.clearRect(0, 0, c.width, c.height);
       drawShoeGuide(ctx, c.width, c.height);
       setHasDrawn(false);
-      setResult(null);
+      // intentionally NOT clearing result here
     }
   }, [tab]);
 
@@ -287,6 +289,7 @@ export default function DesignStudio() {
       }
 
       setResult(concept);
+      setHistory(prev => [{ ...concept, prompt, timestamp: new Date() }, ...prev].slice(0, 20));
     } catch (e) {
       setErr("Generation failed. Add a text description and try again.");
       console.error(e);
@@ -369,7 +372,12 @@ export default function DesignStudio() {
           <button style={s.tab(tab==="upload")} onClick={() => setTab("upload")}>↑ Upload</button>
           <button style={s.tab(tab==="draw")} onClick={() => setTab("draw")}>✏ Draw</button>
         </div>
-        <div style={{ fontFamily:"'DM Mono',monospace", fontSize:"10px", color:"#666", letterSpacing:"0.12em" }}>
+        <div style={{ fontFamily:"'DM Mono',monospace", fontSize:"10px", color:"#666", letterSpacing:"0.12em", display:"flex", alignItems:"center", gap:"16px" }}>
+          {history.length > 0 && (
+            <button onClick={() => setShowHistory(h => !h)} style={{ background:"rgba(255,77,0,0.12)", border:"1px solid rgba(255,77,0,0.25)", color:"#ff6a20", fontFamily:"'DM Mono',monospace", fontSize:"10px", letterSpacing:"0.12em", padding:"5px 12px", borderRadius:"3px", cursor:"pointer" }}>
+              HISTORY ({history.length})
+            </button>
+          )}
           AIR MAX PLATFORM · v1
         </div>
       </header>
@@ -594,6 +602,47 @@ export default function DesignStudio() {
           </div>
         </div>
       </div>
+
+      {/* ── History Panel ── */}
+      {showHistory && (
+        <div style={{ position:"fixed", top:0, right:0, width:"360px", height:"100vh", background:"#16171a", borderLeft:"1px solid #2a2a2e", zIndex:200, display:"flex", flexDirection:"column", boxShadow:"-8px 0 32px rgba(0,0,0,0.5)" }}>
+          <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", padding:"16px 20px", borderBottom:"1px solid #2a2a2e" }}>
+            <div style={{ fontFamily:"'Bebas Neue',sans-serif", fontSize:"22px", letterSpacing:"0.05em" }}>Design History</div>
+            <button onClick={() => setShowHistory(false)} style={{ background:"transparent", border:"none", color:"#666", cursor:"pointer", fontSize:"18px" }}>✕</button>
+          </div>
+          <div style={{ flex:1, overflowY:"auto", padding:"12px" }}>
+            {history.map((h, i) => (
+              <div key={i}
+                onClick={() => { setResult(h); setPrompt(h.prompt); setShowHistory(false); }}
+                style={{ display:"flex", gap:"12px", padding:"12px", borderRadius:"6px", border:"1px solid #2a2a2e", marginBottom:"8px", cursor:"pointer", background: i===0?"rgba(255,77,0,0.05)":"transparent", transition:"all 0.15s" }}
+                onMouseEnter={e => e.currentTarget.style.borderColor="#ff4d00"}
+                onMouseLeave={e => e.currentTarget.style.borderColor="#2a2a2e"}
+              >
+                {/* thumbnail */}
+                <div style={{ width:"72px", height:"56px", borderRadius:"4px", background:"#1c1d21", flexShrink:0, overflow:"hidden" }}>
+                  {h.generatedImage
+                    ? <img src={h.generatedImage} alt={h.name} style={{ width:"100%", height:"100%", objectFit:"cover" }} />
+                    : <div style={{ width:"100%", height:"100%", display:"flex", alignItems:"center", justifyContent:"center" }}>
+                        <div style={{ display:"flex", gap:"4px" }}>
+                          {(h.colorway||[]).slice(0,3).map((c,j) => <div key={j} style={{ width:"12px", height:"12px", borderRadius:"50%", background:c }} />)}
+                        </div>
+                      </div>
+                  }
+                </div>
+                {/* info */}
+                <div style={{ flex:1, minWidth:0 }}>
+                  <div style={{ fontFamily:"'Bebas Neue',sans-serif", fontSize:"16px", color:"#f5f4f0", letterSpacing:"0.03em", marginBottom:"2px" }}>{h.name}</div>
+                  <div style={{ fontSize:"11px", color:"#555", marginBottom:"4px", fontFamily:"'DM Mono',monospace" }}>
+                    {h.timestamp?.toLocaleTimeString([], { hour:"2-digit", minute:"2-digit" })}
+                    {i === 0 && <span style={{ color:"#ff6a20", marginLeft:"8px" }}>LATEST</span>}
+                  </div>
+                  <div style={{ fontSize:"11px", color:"#666", overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap" }}>{h.prompt}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
