@@ -256,7 +256,7 @@ export default function DesignStudio() {
         messages = [{ role: "user", content: `You are a Nike × Zellerfeld sneaker design AI. Create a custom 3D-printed Air Max concept from: "${prompt}"\n\n${jsonInstr}` }];
       }
 
-      const res = await fetch("https://api.anthropic.com/v1/messages", {
+      const res = await fetch("/.netlify/functions/interpret-design", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ model: "claude-sonnet-4-20250514", max_tokens: 1000, messages })
